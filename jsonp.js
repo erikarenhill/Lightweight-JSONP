@@ -14,12 +14,15 @@
 */
 var JSONP = (function(){
 	var counter = 0, head, query, key, window = this;
-	function load(url) {
+	function load(url, failureCallback) {
 		var script = document.createElement('script'),
 			done = false;
 		script.src = url;
 		script.async = true;
  
+		script.onerror = function() { 
+			failureCallback(); 
+		}
 		script.onload = script.onreadystatechange = function() {
 			if ( !done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete") ) {
 				done = true;
@@ -34,7 +37,7 @@ var JSONP = (function(){
 		}
 		head.appendChild( script );
 	}
-	function jsonp(url, params, callback) {
+	function jsonp(url, params, callback, failureCallback) {
 		query = "?";
 		params = params || {};
 		for ( key in params ) {
@@ -51,7 +54,7 @@ var JSONP = (function(){
 			window[ jsonp ] = null;
 		};
  
-		load(url + query + "callback=" + jsonp);
+		load(url + query + "callback=" + jsonp, failureCallback);
 		return jsonp;
 	}
 	return {
