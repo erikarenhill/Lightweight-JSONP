@@ -1,4 +1,4 @@
-/*
+/*!
 * Lightweight JSONP fetcher
 * Copyright 2010 Erik Karlsson. All rights reserved.
 * BSD licensed
@@ -13,7 +13,7 @@
 * });
 */
 var JSONP = (function(){
-	var counter = 0, head, query, key, window = this;
+	var counter = 0, head;
 	function load(url) {
 		var script = document.createElement('script'),
 			done = false;
@@ -34,25 +34,26 @@ var JSONP = (function(){
 		}
 		head.appendChild( script );
 	}
-	function jsonp(url, params, callback) {
-		query = "?";
+	function jsonp(url, params, callback, callbackParameterName) {
+		var query = "?";
 		params = params || {};
-		for ( key in params ) {
+		callbackParameterName = callbackParameterName || "callback";
+		for ( var key in params ) {
 			if ( params.hasOwnProperty(key) ) {
 				query += encodeURIComponent(key) + "=" + encodeURIComponent(params[key]) + "&";
 			}
 		}
-		var jsonp = "json" + (++counter);
-		window[ jsonp ] = function(data){
+		var uniqueName = "json" + (++counter);
+		window[ uniqueName ] = function(data){
 			callback(data);
 			try {
-				delete window[ jsonp ];
+				delete window[ uniqueName ];
 			} catch (e) {}
-			window[ jsonp ] = null;
+			window[ uniqueName ] = null;
 		};
  
-		load(url + query + "callback=" + jsonp);
-		return jsonp;
+		load(url + query + callbackParameterName + "=" + uniqueName);
+		return uniqueName;
 	}
 	return {
 		get:jsonp
