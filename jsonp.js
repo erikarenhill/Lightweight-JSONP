@@ -1,6 +1,6 @@
 /*
 * Lightweight JSONP fetcher
-* Copyright 2010 Erik Karlsson. All rights reserved.
+* Copyright 2010-2012 Erik Karlsson. All rights reserved.
 * BSD licensed
 */
 
@@ -13,7 +13,7 @@
 * });
 */
 var JSONP = (function(){
-	var counter = 0, head, query, key, window = this;
+	var counter = 0, head, query, key, window = this, config = {};
 	function load(url) {
 		var script = document.createElement('script'),
 			done = false;
@@ -34,12 +34,15 @@ var JSONP = (function(){
 		}
 		head.appendChild( script );
 	}
-	function jsonp(url, params, callback) {
-		query = "?";
+	function encode(str) {
+		return encodeURIComponent(str);
+	}
+	function jsonp(url, params, callback, callbackName) {
+		query = (url||'').indexOf('?') === -1 ? '?' : '&';
 		params = params || {};
 		for ( key in params ) {
 			if ( params.hasOwnProperty(key) ) {
-				query += encodeURIComponent(key) + "=" + encodeURIComponent(params[key]) + "&";
+				query += encode(key) + "=" + encode(params[key]) + "&";
 			}
 		}
 		var jsonp = "json" + (++counter);
@@ -51,10 +54,14 @@ var JSONP = (function(){
 			window[ jsonp ] = null;
 		};
  
-		load(url + query + "callback=" + jsonp);
+		load(url + query + (callbackName||config['callbackName']||'callback') + '=' + jsonp);
 		return jsonp;
 	}
+	function setDefaults(obj){
+		config = obj;
+	}
 	return {
-		get:jsonp
+		get:jsonp,
+		init:setDefaults
 	};
 }());
