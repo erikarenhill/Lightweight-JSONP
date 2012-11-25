@@ -7,7 +7,13 @@
 	<body>
 		<ul id="example"></ul>
 		<script>
-			JSONP.get('sample-data.php', {}, function(data) {
+			JSONP.init({
+				error: function(ex){
+					alert("Failed to load : " + ex.url);
+				}
+			});
+		
+			JSONP.get('sample-data.php', {param1:'123'}, function(data) {
 				var example = document.getElementById('example'),
 					item = null, li = null;
 					
@@ -22,6 +28,9 @@
 					}				
 				}
 			});
+			
+			//Uncomment the following call will trigger the error callback and alert the failing url.
+			//JSONP.get('not-existing-url');
 		</script>
 	</body>
 </html>

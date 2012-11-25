@@ -13,13 +13,20 @@
 * });
 */
 var JSONP = (function(){
-	var counter = 0, head, query, key, window = this, config = {};
-	function load(url) {
+	var counter = 0, head, window = this, config = {};
+	function load(url, pfnError) {
 		var script = document.createElement('script'),
 			done = false;
 		script.src = url;
 		script.async = true;
  
+		var errorHandler = pfnError || config.error;
+		if ( typeof errorHandler === 'function' ) {
+			script.onerror = function(ex){
+				errorHandler({url: url, event: ex});
+			};
+		}
+		
 		script.onload = script.onreadystatechange = function() {
 			if ( !done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete") ) {
 				done = true;
@@ -29,6 +36,7 @@ var JSONP = (function(){
 				}
 			}
 		};
+		
 		if ( !head ) {
 			head = document.getElementsByTagName('head')[0];
 		}
@@ -38,24 +46,28 @@ var JSONP = (function(){
 		return encodeURIComponent(str);
 	}
 	function jsonp(url, params, callback, callbackName) {
-		query = (url||'').indexOf('?') === -1 ? '?' : '&';
+		var query = (url||'').indexOf('?') === -1 ? '?' : '&', key;
+				
+		callbackName = (callbackName||config['callbackName']||'callback');
+		var uniqueName = callbackName + "_json" + (++counter);
+		
 		params = params || {};
 		for ( key in params ) {
 			if ( params.hasOwnProperty(key) ) {
 				query += encode(key) + "=" + encode(params[key]) + "&";
 			}
-		}
-		var jsonp = "json" + (++counter);
-		window[ jsonp ] = function(data){
+		}	
+		
+		window[ uniqueName ] = function(data){
 			callback(data);
 			try {
-				delete window[ jsonp ];
+				delete window[ uniqueName ];
 			} catch (e) {}
-			window[ jsonp ] = null;
+			window[ uniqueName ] = null;
 		};
  
-		load(url + query + (callbackName||config['callbackName']||'callback') + '=' + jsonp);
-		return jsonp;
+		load(url + query + callbackName + '=' + uniqueName);
+		return uniqueName;
 	}
 	function setDefaults(obj){
 		config = obj;
