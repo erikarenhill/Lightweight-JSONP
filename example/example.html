@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Lightweight-JSONP Example</title>
+		<script src="../jsonp.js"></script>
+	</head>
+	<body>
+		<ul id="example"></ul>
+		<script>
+			JSONP.get('sample-data.php', {}, function(data) {
+				var example = document.getElementById('example'),
+					item = null, li = null;
+					
+				if ( data && data.length > 0 ) {
+					for ( var i in data ) {
+						if ( data.hasOwnProperty(i) ) {
+							item = data[i];
+							li = document.createElement('li');
+							li.innerHTML = "<h3>"+item.title+"</h3><p>"+item.description+"</p>";
+							example.appendChild(li);
+						}
+					}				
+				}
+			});
+		</script>
+	</body>
+</html>
