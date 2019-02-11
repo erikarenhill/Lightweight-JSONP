@@ -2,16 +2,16 @@
 <html>
 	<head>
 		<title>Lightweight-JSONP Example</title>
-		<script src="jsonp.min.js"></script>
+		<script src="jsonp.js"></script>
 	</head>
 	<body>
 		<ul id="example"></ul>
 		<script>
 			JSONP.init({
 				error: function(ex){
-					alert("Failed to load : " + ex.url);
-				}
-			
+					console.log("Failed to load : " + ex.url);
+				},
+				timeout: 3000 //timeout in millis before error callback will be called if not yet completed
 			});
 
 			function the_callback(data) {
@@ -30,7 +30,9 @@
 				}
 			}
 		
-			JSONP.get('sample-data.js', {param1:'123'}, 'the_callback');
+			JSONP.get('sample-data.js', {param1:'123'}, function(data){
+				console.log("Received data: ", data)
+			}, 'the_callback');
 
 			
 			

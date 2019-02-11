@@ -6,15 +6,17 @@
 */
 var JSONP = (function(window){
 	var counter = 0, head, config = {}, timeoutTimer;
-	function load(url, pfnError) {
+	function load(url, onTimeout) {
 		var script = document.createElement('script'),
-			done = false;
+			done = false,
+			didTimeout = false;
 		script.src = url;
 		script.async = true;
  
-		var errorHandler = pfnError || config.error;
+		var errorHandler = config.error;
 		if ( typeof errorHandler === 'function' ) {
 			script.onerror = function(ex){
+				_clearTimeout();
 				errorHandler({url: url, event: ex});
 			};
 		}
@@ -22,7 +24,7 @@ var JSONP = (function(window){
 		script.onload = script.onreadystatechange = function() {
 			if ( !done && (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') ) {
 				done = true;
-				clearTimeout();
+				_clearTimeout();
 				script.onload = script.onreadystatechange = null;
 				if ( script && script.parentNode ) {
 					script.parentNode.removeChild( script );
@@ -30,14 +32,15 @@ var JSONP = (function(window){
 			}
 		};
 
-		function clearTimeout(){
-			clearTimeout(timeoutTimer)
+		function _clearTimeout(){
+			clearTimeout(timeoutTimer);
 			timeoutTimer = null;
 		}
 
 		function triggerTimeout() {
 			if ( typeof errorHandler === 'function' ) {
 				errorHandler({url: url, event: new Error('Timeout')})
+				onTimeout();
 			}
 		}
 
@@ -68,15 +71,18 @@ var JSONP = (function(window){
 			}
 		}	
 		
+		var didTimeout = false;
 		window[ callbackName ] = function(data){
-			callback(data);
+			if ( !didTimeout ) {
+				callback(data);
+			}
 			try {
 				delete window[ callbackName ];
 			} catch (e) {}
 			window[ callbackName ] = null;
 		};
  
-		load(url + query + 'callback=' + callbackName);
+		load(url + query + 'callback=' + callbackName, function(){didTimeout = true;});
 		return callbackName;
 	}
 	function setDefaults(obj){
