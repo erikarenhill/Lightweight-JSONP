@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>Lightweight-JSONP Example</title>
-		<script src="../jsonp.js"></script>
+		<script src="jsonp.js"></script>
 	</head>
 	<body>
 		<ul id="example"></ul>
@@ -11,9 +11,10 @@
 				error: function(ex){
 					alert("Failed to load : " + ex.url);
 				}
+			
 			});
-		
-			JSONP.get('sample-data.php', {param1:'123'}, function(data) {
+
+			function the_callback(data) {
 				var example = document.getElementById('example'),
 					item = null, li = null;
 					
@@ -27,7 +28,11 @@
 						}
 					}				
 				}
-			});
+			}
+		
+			JSONP.get('sample-data.js', {param1:'123'}, 'the_callback');
+
+			
 			
 			//Uncomment the following call will trigger the error callback and alert the failing url.
 			//JSONP.get('not-existing-url');

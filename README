@@ -1,13 +1,8 @@
-Lightweight JSONP Javascript Library without dependencies.
+# Lightweight JSONP 
+## Javascript Library for making JSON requests easy without external dependencies.
 
 Usage:
-
-/* Optional setting for default callback name */
-JSONP.init({
-  callbackName: 'jsonp'
-});
-
-
+```javascript
 /* 
 * This will make a request for the url 
 * /test?otherParam1&param1=a&param2=b&callback=json{N}  where {N} is an auto incrementing counter
@@ -17,3 +12,12 @@ JSONP.init({
 JSONP.get('/test?otherParam=1', {param1:'a', param2:'b'}, function(response){
 	console.log(response);
 }/* , "overrideCallbackName" */);
+```
+
+To run the sample:
+```
+yarn
+yarn start
+```
+
+Software delivered as is. Have fun and don't be evil.

@@ -1,7 +1,8 @@
+'use strict'
 /*
 * Lightweight JSONP fetcher
-* Copyright 2010-2012 Erik Karlsson. All rights reserved.
-* BSD licensed
+* Copyright 2010-2012 Erik Arenhill. All rights reserved.
+* BSD Zero Clause License
 */
 
 
@@ -12,8 +13,8 @@
 *   //do something with data, which is the JSON object you should retrieve from someUrl.php
 * });
 */
-var JSONP = (function(){
-	var counter = 0, head, window = this, config = {};
+var JSONP = (function(window){
+	var counter = 0, head, config = {};
 	function load(url, pfnError) {
 		var script = document.createElement('script'),
 			done = false;
@@ -28,7 +29,7 @@ var JSONP = (function(){
 		}
 		
 		script.onload = script.onreadystatechange = function() {
-			if ( !done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete") ) {
+			if ( !done && (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') ) {
 				done = true;
 				script.onload = script.onreadystatechange = null;
 				if ( script && script.parentNode ) {
@@ -49,25 +50,27 @@ var JSONP = (function(){
 		var query = (url||'').indexOf('?') === -1 ? '?' : '&', key;
 				
 		callbackName = (callbackName||config['callbackName']||'callback');
-		var uniqueName = callbackName + "_json" + (++counter);
+		if ( !config['callbackName'] ) {
+			callbackName = callbackName + '_jsonp_' + (++counter);
+		}
 		
 		params = params || {};
 		for ( key in params ) {
 			if ( params.hasOwnProperty(key) ) {
-				query += encode(key) + "=" + encode(params[key]) + "&";
+				query += encode(key) + '=' + encode(params[key]) + '&';
 			}
 		}	
 		
-		window[ uniqueName ] = function(data){
+		window[ callbackName ] = function(data){
 			callback(data);
 			try {
-				delete window[ uniqueName ];
+				delete window[ callbackName ];
 			} catch (e) {}
-			window[ uniqueName ] = null;
+			window[ callbackName ] = null;
 		};
  
-		load(url + query + callbackName + '=' + uniqueName);
-		return uniqueName;
+		load(url + query + 'callback=' + callbackName);
+		return callbackName;
 	}
 	function setDefaults(obj){
 		config = obj;
@@ -75,5 +78,9 @@ var JSONP = (function(){
 	return {
 		get:jsonp,
 		init:setDefaults
-	};
-}());
+	}
+}(window))
+
+if ( typeof module !== 'undefined' ) {
+	module.exports = JSONP
+}

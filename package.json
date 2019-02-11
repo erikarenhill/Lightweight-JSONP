@@ -1,0 +1,16 @@
+{
+  "name": "lightweight-jsonp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:erikarenhill/Lightweight-JSONP.git",
+  "author": "Erik Arenhill",
+  "license": "0BSD",
+  "devDependencies": {
+    "jest": "^24.1.0",
+    "static-server": "^2.2.1"
+  },
+  "scripts": {
+    "start": "static-server -i example.html -o",
+    "test": "jest"
+  }
+}
