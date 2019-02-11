@@ -1,17 +1,8 @@
 'use strict'
-/*
+/*!
 * Lightweight JSONP fetcher
-* Copyright 2010-2012 Erik Arenhill. All rights reserved.
+* Copyright 2010-2019 Erik Arenhill. All rights reserved.
 * BSD Zero Clause License
-*/
-
-
-/*
-* Usage:
-* 
-* JSONP.get( 'someUrl.php', {param1:'123', param2:'456'}, function(data){
-*   //do something with data, which is the JSON object you should retrieve from someUrl.php
-* });
 */
 var JSONP = (function(window){
 	var counter = 0, head, config = {};

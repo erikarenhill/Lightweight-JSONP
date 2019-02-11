@@ -6,11 +6,13 @@
   "author": "Erik Arenhill",
   "license": "0BSD",
   "devDependencies": {
+    "google-closure-compiler": "^20190121.0.0",
     "jest": "^24.1.0",
     "static-server": "^2.2.1"
   },
   "scripts": {
     "start": "static-server -i example.html -o",
-    "test": "jest"
+    "test": "jest",
+    "build": "google-closure-compiler --js=jsonp.js --js_output_file=jsonp.min.js"
   }
 }
