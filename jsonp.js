@@ -5,11 +5,11 @@
 * BSD Zero Clause License
 */
 var JSONP = (function(window){
-	var counter = 0, head, config = {}, timeoutTimer;
+	var counter = 0, head, config = {};
 	function load(url, onTimeout) {
 		var script = document.createElement('script'),
 			done = false,
-			didTimeout = false;
+			timeoutTimer = null;
 		script.src = url;
 		script.async = true;
  
