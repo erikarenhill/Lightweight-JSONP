@@ -5,7 +5,7 @@
 * BSD Zero Clause License
 */
 var JSONP = (function(window){
-	var counter = 0, head, config = {};
+	var counter = 0, head, config = {}, timeoutTimer;
 	function load(url, pfnError) {
 		var script = document.createElement('script'),
 			done = false;
@@ -22,12 +22,28 @@ var JSONP = (function(window){
 		script.onload = script.onreadystatechange = function() {
 			if ( !done && (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') ) {
 				done = true;
+				clearTimeout();
 				script.onload = script.onreadystatechange = null;
 				if ( script && script.parentNode ) {
 					script.parentNode.removeChild( script );
 				}
 			}
 		};
+
+		function clearTimeout(){
+			clearTimeout(timeoutTimer)
+			timeoutTimer = null;
+		}
+
+		function triggerTimeout() {
+			if ( typeof errorHandler === 'function' ) {
+				errorHandler({url: url, event: new Error('Timeout')})
+			}
+		}
+
+		if ( config.timeout ) {
+			timeoutTimer = setTimeout(triggerTimeout, config.timeout)
+		}
 		
 		if ( !head ) {
 			head = document.getElementsByTagName('head')[0];
