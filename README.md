@@ -1,5 +1,5 @@
 # Lightweight JSONP 
-### Javascript Library for making JSON requests easy.
+### Javascript Library for making JSONP requests easy.
 
 No external dependencies except running tests/sample
 
